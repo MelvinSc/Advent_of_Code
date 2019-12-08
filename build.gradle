@@ -1,0 +1,23 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.61'
+}
+
+group 'io.github.melvinsc'
+version '2019.4'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.2.0'
+
+    // https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit
+    compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.6.2'
+
+    // https://mvnrepository.com/artifact/com.squareup.retrofit2/converter-scalars
+    compile group: 'com.squareup.retrofit2', name: 'converter-scalars', version: '2.6.2'
+}
