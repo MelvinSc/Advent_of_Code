@@ -1,5 +1,7 @@
 package io.github.melvinsc.utils
 
+import java.util.*
+
 fun <T> Iterable<T>.getGroups(): List<List<T>> {
     val ret = mutableListOf<MutableList<T>>()
     var list = mutableListOf<T>()
@@ -13,4 +15,10 @@ fun <T> Iterable<T>.getGroups(): List<List<T>> {
     }
 
     return ret
+}
+
+fun <T> linkedListOf(vararg items: T) = LinkedList<T>().apply {
+    for (i in items) {
+        add(i)
+    }
 }
