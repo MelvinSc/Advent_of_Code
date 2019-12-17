@@ -8,8 +8,8 @@ import kotlin.math.abs
 fun main() = Day.setMain(Day03)
 
 object Day03 : Day() {
-    override fun first(input: String): Int? {
-        val (wire1, wire2) = input
+    override fun first(inputData: String): Int? {
+        val (wire1, wire2) = inputData
             .lines()
             .map { line -> line.split(',').map { Directions.valueOf(it.take(1)) to it.substring(1).toInt() } }
             .map { wire ->
@@ -23,8 +23,8 @@ object Day03 : Day() {
         return (wire1.intersect(wire2)).map { abs(it.x) + abs(it.y) }.min()
     }
 
-    override fun second(input: String): Int? {
-        val (wire1, wire2) = input
+    override fun second(inputData: String): Int? {
+        val (wire1, wire2) = inputData
             .lines()
             .map { line -> line.split(',').map { Directions.valueOf(it.take(1)) to it.substring(1).toInt() } }
             .map { wire ->

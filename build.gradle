@@ -13,11 +13,17 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.2.0'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.2.0'
 
     // https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit
-    compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.6.2'
+    implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.6.2'
 
     // https://mvnrepository.com/artifact/com.squareup.retrofit2/converter-scalars
-    compile group: 'com.squareup.retrofit2', name: 'converter-scalars', version: '2.6.2'
+    implementation group: 'com.squareup.retrofit2', name: 'converter-scalars', version: '2.6.2'
+
+    // https://www.kotlinresources.com/library/kotlindiscretemathtoolkit/
+    implementation 'com.marcinmoskala:DiscreteMathToolkit:1.0.3'
+
+    // https://bintray.com/kotlin/kotlinx/kotlinx.coroutines/1.3.3
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3'
 }

@@ -5,8 +5,8 @@ import io.github.melvinsc.utils.day.Day
 fun main() = Day.setMain(Day01)
 
 object Day01 : Day() {
-    override fun first(input: String): Int {
-        val intArray = input.split("\n").map { it.toInt() }.toTypedArray()
+    override fun first(inputData: String): Int {
+        val intArray = inputData.split("\n").map { it.toInt() }.toTypedArray()
         var sum = 0
 
         intArray.forEach { sum += getFuelCost(it) }
@@ -14,7 +14,7 @@ object Day01 : Day() {
         return sum
     }
 
-    override fun second(input: String): Int {
+    override fun second(inputData: String): Int {
         fun getFuelCostRecursive(weight: Int): Int {
             val ret = getFuelCost(weight)
 
@@ -25,7 +25,7 @@ object Day01 : Day() {
             }
         }
 
-        val intArray = input.split("\n").map { it.toInt() }.toTypedArray()
+        val intArray = inputData.split("\n").map { it.toInt() }.toTypedArray()
         var sum = 0
 
         intArray.forEach { weight -> sum += getFuelCostRecursive(weight) }

@@ -10,11 +10,11 @@ abstract class Day {
     val day = javaClass.name.split(".")[4].takeLast(2).toInt()
     val input: String = Fetcher.getInput(year, day)
 
-    open fun first(input: String): Any? {
+    open fun first(inputData: String): Any? {
         return null
     }
 
-    open fun second(input: String): Any? {
+    open fun second(inputData: String): Any? {
         return null
     }
 

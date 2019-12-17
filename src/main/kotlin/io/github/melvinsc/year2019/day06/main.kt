@@ -7,8 +7,8 @@ import io.github.melvinsc.utils.day.Day
 fun main() = Day.setMain(Day06)
 
 object Day06 : Day() {
-    override fun first(input: String): Int {
-        val tree = input.split("\n")
+    override fun first(inputData: String): Int {
+        val tree = inputData.split("\n")
             .map { line -> line.split(")") }
             .fold(BufferTree<String>()) { acc, orbit ->
                 acc.insert(orbit[0], orbit[1], orbit[0] == "COM")
@@ -34,8 +34,8 @@ object Day06 : Day() {
         }
     }
 
-    override fun second(input: String): Int {
-        val graph = input.split("\n")
+    override fun second(inputData: String): Int {
+        val graph = inputData.split("\n")
             .map { line -> line.split(")") }
             .fold(Graph<String>()) { acc, orbit ->
                 acc.addEdge(orbit[0], orbit[1])

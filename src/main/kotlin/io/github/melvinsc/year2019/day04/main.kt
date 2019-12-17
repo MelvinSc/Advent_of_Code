@@ -6,8 +6,8 @@ import io.github.melvinsc.utils.getGroups
 fun main() = Day.setMain(Day04)
 
 object Day04 : Day() {
-    override fun first(input: String): Int {
-        val (from, to) = input.split('-').map { it.toInt() }
+    override fun first(inputData: String): Int {
+        val (from, to) = inputData.split('-').map { it.toInt() }
 
         return IntRange(from, to)
             .asSequence()
@@ -17,8 +17,8 @@ object Day04 : Day() {
             .count()
     }
 
-    override fun second(input: String): Int {
-        val (from, to) = input.split('-').map { it.toInt() }
+    override fun second(inputData: String): Int {
+        val (from, to) = inputData.split('-').map { it.toInt() }
 
         return IntRange(from, to)
             .asSequence()
