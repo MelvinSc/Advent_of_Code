@@ -7,67 +7,79 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class IntCode {
+    private var index = 0L
+    private var relBase = 0L
+    private val DEFAULT_VALUE = 0L
+    private val memory = HashMap<Long, Long>()
+
     suspend fun evalSuspendable(
-        program: IntArray,
-        input: ReceiveChannel<Int> = Channel(Channel.UNLIMITED),
-        output: SendChannel<Int> = Channel(Channel.UNLIMITED)
+        program: LongArray,
+        input: ReceiveChannel<Long> = Channel(Channel.UNLIMITED),
+        output: SendChannel<Long> = Channel(Channel.UNLIMITED)
     ) {
         data class Op(
             val length: Int,
-            val eval: suspend (program: IntArray, position: Int, modes: List<Int>) -> Int?
+            val eval: suspend (modes: List<Int>) -> Long?
         )
 
-        fun getValue(program: IntArray, value: Int, mode: Int) = when (mode) {
-            0 -> program[program[value]]
-            1 -> program[value]
+        fun getValue(currentIndex: Long, mode: Int) = when (mode) {
+            0 -> memory.getOrDefault(memory.getOrDefault(currentIndex, DEFAULT_VALUE), DEFAULT_VALUE)
+            1 -> memory.getOrDefault(currentIndex, DEFAULT_VALUE)
+            2 -> memory.getOrDefault(relBase + memory.getOrDefault(currentIndex, DEFAULT_VALUE), DEFAULT_VALUE)
+            else -> throw UnsupportedOperationException("Mode $mode is not supported")
+        }
+
+        fun getDestination(currentIndex: Long, mode: Int) = when (mode) {
+            0 -> memory.getOrDefault(currentIndex, DEFAULT_VALUE)
+            2 -> relBase + memory.getOrDefault(currentIndex, DEFAULT_VALUE)
             else -> throw UnsupportedOperationException("Mode $mode is not supported")
         }
 
         val ops = mapOf(
-            1 to Op(4) { currentProgram, position, modes ->
-                currentProgram[currentProgram[position + 3]] =
-                    getValue(currentProgram, position + 1, modes[0]) + getValue(currentProgram, position + 2, modes[1])
+            1 to Op(4) { modes ->
+                memory[getDestination(index + 3, modes[2])] =
+                    getValue(index + 1, modes[0]) + getValue(index + 2, modes[1])
                 null
             },
-            2 to Op(4) { currentProgram, position, modes ->
-                currentProgram[currentProgram[position + 3]] =
-                    getValue(currentProgram, position + 1, modes[0]) * getValue(currentProgram, position + 2, modes[1])
+            2 to Op(4) { modes ->
+                memory[getDestination(index + 3, modes[2])] =
+                    getValue(index + 1, modes[0]) * getValue(index + 2, modes[1])
                 null
             },
-            3 to Op(2) { currentProgram, position, _ ->
-                currentProgram[currentProgram[position + 1]] = input.receive()
+            3 to Op(2) { modes ->
+                memory[getDestination(index + 1, modes[0])] = input.receive()
                 null
             },
-            4 to Op(2) { currentProgram, position, modes ->
-                output.send(getValue(currentProgram, position + 1, modes[0]))
+            4 to Op(2) { modes ->
+                output.send(getValue(index + 1, modes[0]))
                 null
             },
-            5 to Op(3) { currentProgram, position, modes ->
-                getValue(currentProgram, position + 1, modes[0]).takeIf { it != 0 }
-                    ?.let { getValue(currentProgram, position + 2, modes[1]) }
+            5 to Op(3) { modes ->
+                getValue(index + 1, modes[0]).takeIf { it != 0L }
+                    ?.let { getValue(index + 2, modes[1]) }
             },
-            6 to Op(3) { currentProgram, position, modes ->
-                getValue(currentProgram, position + 1, modes[0]).takeIf { it == 0 }
-                    ?.let { getValue(currentProgram, position + 2, modes[1]) }
+            6 to Op(3) { modes ->
+                getValue(index + 1, modes[0]).takeIf { it == 0L }
+                    ?.let { getValue(index + 2, modes[1]) }
             },
-            7 to Op(4) { currentProgram, position, modes ->
-                currentProgram[currentProgram[position + 3]] =
-                    if (getValue(currentProgram, position + 1, modes[0]) < getValue(
-                            currentProgram,
-                            position + 2,
-                            modes[1]
-                        )
-                    ) 1 else 0
+            7 to Op(4) { modes ->
+                memory[getDestination(index + 3, modes[2])] =
+                    if (getValue(index + 1, modes[0]) <
+                        getValue(index + 2, modes[1])
+                    )
+                        1L else 0L
                 null
             },
-            8 to Op(4) { currentProgram, position, modes ->
-                currentProgram[currentProgram[position + 3]] =
-                    if (getValue(currentProgram, position + 1, modes[0]) == getValue(
-                            currentProgram,
-                            position + 2,
-                            modes[1]
-                        )
-                    ) 1 else 0
+            8 to Op(4) { modes ->
+                memory[getDestination(index + 3, modes[2])] =
+                    if (getValue(index + 1, modes[0]) ==
+                        getValue(index + 2, modes[1])
+                    )
+                        1L else 0L
+                null
+            },
+            9 to Op(2) { modes ->
+                relBase += getValue(index + 1, modes[0])
                 null
             }
         )
@@ -84,24 +96,27 @@ class IntCode {
             return op to modes
         }
 
-        var index = 0
-        while (index in program.indices) {
-            val rawOp = program[index]
-            parseOp(rawOp)?.let { (op, modes) ->
-                val jump = op.eval(program, index, modes)
+        program.forEachIndexed { index, i -> memory[index.toLong()] = i }
+
+        while (true) {
+            val rawOp = memory.getOrDefault(index, DEFAULT_VALUE)
+            parseOp(rawOp.toInt())?.let { (op, modes) ->
+                val jump = op.eval(modes)
                 index = jump ?: index + op.length
             } ?: when (rawOp) {
-                99 -> return
+                99L -> {
+                    program.indices.forEachIndexed { i, _ -> program[i] = memory[i.toLong()] ?: return@forEachIndexed }
+                    return
+                }
                 else -> throw UnsupportedOperationException("Opcode $rawOp is not supported")
             }
         }
-
-        throw IndexOutOfBoundsException("Trying to reach position out of memory bounds")
     }
 
-    fun eval (program: IntArray,
-              input: ReceiveChannel<Int> = Channel(Channel.UNLIMITED),
-              output: SendChannel<Int> = Channel(Channel.UNLIMITED)
+    fun eval(
+        program: LongArray,
+        input: ReceiveChannel<Long> = Channel(Channel.UNLIMITED),
+        output: SendChannel<Long> = Channel(Channel.UNLIMITED)
     ) {
         runBlocking {
             launch {

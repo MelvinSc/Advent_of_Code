@@ -10,18 +10,22 @@ import kotlinx.coroutines.runBlocking
 fun main() = Day.setMain(Day07)
 
 object Day07 : Day() {
-    override fun first(inputData: String): Int {
-        val program = inputData.split(",").map { it.toInt() }.toIntArray()
+    override fun first(inputData: String): Long {
+        val program = inputData.split(",").map { it.toLong() }.toLongArray()
 
-        return setOf(0, 1, 2, 3, 4).permutations()
+        return setOf(0L, 1L, 2L, 3L, 4L).permutations()
             .map { permutation ->
-                var arg = 0
+                var arg = 0L
                 for (i in permutation.indices) {
-                    val input = Channel<Int>(Channel.UNLIMITED).apply { runBlocking { launch {
-                        send(permutation[i])
-                        send(arg)
-                    } } }
-                    val output = Channel<Int>(Channel.UNLIMITED)
+                    val input = Channel<Long>(Channel.UNLIMITED).apply {
+                        runBlocking {
+                            launch {
+                                send(permutation[i])
+                                send(arg)
+                            }
+                        }
+                    }
+                    val output = Channel<Long>(Channel.UNLIMITED)
                     IntCode().eval(program.copyOf(), input, output)
                     arg = output.poll() ?: throw IllegalStateException("No output was given")
                 }
@@ -29,19 +33,23 @@ object Day07 : Day() {
             }.max() ?: throw IllegalStateException("No max found")
     }
 
-    override fun second(inputData: String): Int {
-        val program = inputData.split(",").map { it.toInt() }.toIntArray()
+    override fun second(inputData: String): Long {
+        val program = inputData.split(",").map { it.toLong() }.toLongArray()
 
-        return setOf(5, 6, 7, 8, 9).permutations()
+        return setOf(5L, 6L, 7L, 8L, 9L).permutations()
             .map { permutation ->
-                val queues = Array<Channel<Int>>(permutation.size) { Channel(Channel.UNLIMITED) }
+                val queues = Array<Channel<Long>>(permutation.size) { Channel(Channel.UNLIMITED) }
                 queues.forEachIndexed { index, channel -> runBlocking { launch { channel.send(permutation[index]) } } }
 
                 runBlocking {
-                    queues[0].send(0)
+                    queues[0].send(0L)
                     for (i: Int in permutation.indices) {
                         launch {
-                            IntCode().evalSuspendable(program.copyOf(), queues[i], queues[(i + 1) % permutation.size])
+                            IntCode().evalSuspendable(
+                                program.copyOf(),
+                                queues[i],
+                                queues[(i + 1) % permutation.size]
+                            )
                         }
                     }
                 }

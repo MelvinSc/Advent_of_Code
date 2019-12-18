@@ -6,18 +6,18 @@ import io.github.melvinsc.year2019.IntCode
 fun main() = Day.setMain(Day02)
 
 object Day02 : Day() {
-    override fun first(inputData: String): Int {
-        val program = inputData.split(",").map { it.toInt() }.toIntArray()
-        program[1] = 12
-        program[2] = 2
+    override fun first(inputData: String): Long {
+        val program = inputData.split(",").map { it.toLong() }.toLongArray()
+        program[1] = 12L
+        program[2] = 2L
         IntCode().eval(program)
         return program[0]
     }
 
-    override fun second(inputData: String): Int {
-        val program = inputData.split(",").map { it.toInt() }.toIntArray()
-        for (noun in 0..99) {
-            for (verb in 0..99) {
+    override fun second(inputData: String): Long {
+        val program = inputData.split(",").map { it.toLong() }.toLongArray()
+        for (noun in 0L..99L) {
+            for (verb in 0L..99L) {
                 try {
                     val current = program.copyOf()
                     current[1] = noun
@@ -25,7 +25,7 @@ object Day02 : Day() {
 
                     IntCode().eval(current)
 
-                    if (current[0] == 19690720) {
+                    if (current[0] == 19690720L) {
                         return noun * 100 + verb
                     }
                 } catch (ignored: IllegalArgumentException) {
