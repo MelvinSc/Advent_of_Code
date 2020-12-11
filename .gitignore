@@ -114,4 +114,4 @@ gradle-app.setting
 
 ### Advent of Code
 src/main/resources/input/*
-src/main/kotlin/misc/*
+src/main/kotlin/secret/*

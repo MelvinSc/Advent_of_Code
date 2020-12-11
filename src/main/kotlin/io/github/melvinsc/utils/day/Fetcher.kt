@@ -1,6 +1,5 @@
 package io.github.melvinsc.utils.day
 
-import misc.Settings
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -9,6 +8,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Path
+import secret.SESSION_COOKIE
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -17,7 +17,7 @@ import java.nio.file.Paths
  * Network interface.
  */
 interface Fetcher {
-    @Headers("Cookie: session=${Settings.SESSION_COOKIE}")
+    @Headers("Cookie: session=${SESSION_COOKIE}")
     @GET("{year}/day/{day}/input")
     fun fetchInput(@Path("year") year: Int, @Path("day") day: Int): Call<String>
 
