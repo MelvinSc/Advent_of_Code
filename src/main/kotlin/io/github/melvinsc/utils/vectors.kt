@@ -22,6 +22,12 @@ data class Vector2D(var x: Int = 0, var y: Int = 0) {
             }
         }
     }
+
+    fun rotate(degrees: Int) = repeat(Math.floorMod(degrees, 360) / 90) {
+        val tmp = x
+        x = y
+        y = -tmp
+    }
 }
 
 data class Vector3D(var x: Int = 0, var y: Int = 0, var z: Int = 0) {
