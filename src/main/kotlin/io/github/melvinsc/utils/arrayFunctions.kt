@@ -64,3 +64,8 @@ fun flipVertical(matrix: Array<CharArray>): Array<CharArray> {
 
     return ret
 }
+
+fun ByteArray.countLeadingZeroBits(): Int {
+    val index = this.indexOfFirst { it.countLeadingZeroBits() != 8 }
+    return index * 8 + this[index].countLeadingZeroBits()
+}
